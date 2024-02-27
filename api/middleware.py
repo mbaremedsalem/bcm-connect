@@ -1,24 +1,27 @@
-# api/middleware.py
 from django.db import connections
+from django.http import HttpRequest
 
-class DatabaseRouterMiddleware:
+class SwitchDatabaseMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request):
-        # Récupérer l'URL de la demande
+    def __call__(self, request: HttpRequest):
+        # Récupérer le chemin de l'URL de la demande
         path = request.path
 
-        # Déterminer quelle base de données utiliser en fonction de l'URL
-        if path.startswith('/api/get-flux-entrant/') or path.startswith('/api/get-flux-sortant/'):
-            # Utiliser la base de données Oracle pour ces API
-            using_db = 'oracle'
-        else:
-            # Utiliser la base de données SQLite par défaut pour les autres API
+        # Déterminer quelle base de données utiliser en fonction de l'endpoint demandé
+        if path in ['/api/login/', '/api/register/','/api/password/']:
+            # Utiliser la base de données SQLite par défaut pour les endpoints login/ et register/
             using_db = 'sqlite'
+        else:
+            # Utiliser la base de données Oracle par défaut pour les autres endpoints
+            using_db = 'oracle'
 
-        # Exécuter la vue avec la base de données appropriée
-        with connections[using_db].cursor() as cursor:
-            response = self.get_response(request)
+        # Modifier la base de données par défaut en fonction de la configuration
+        connections['default'].close()  # Fermer la connexion existante
+        connections['default'] = connections[using_db]  # Modifier la base de données par défaut
+        connections['default'].ensure_connection()  # Réouvrir la connexion
 
-        return response
+        return self.get_response(request)
+
+

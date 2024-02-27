@@ -58,9 +58,25 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'api.middleware.DatabaseRouterMiddleware',  # Ajoutez votre middleware ici
+    'api.middleware.SwitchDatabaseMiddleware', # Ajoutez votre middleware ici
 ]
 
+DATABASES = {
+    'default': {
+
+    },
+    'oracle': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+    },
+    'sqlite': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+#DATABASE_ROUTERS = ['api.routers.DatabaseRouter']  
 ROOT_URLCONF = 'project.urls'
 AUTH_USER_MODEL = 'api.UserAub'
 
@@ -99,19 +115,8 @@ WSGI_APPLICATION = 'project.wsgi.application'
  #   }
 #}
 
-DATABASES = {
-   # 'default': {},
-    'oracle': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': os.environ.get('DATABASE_NAME'),
-        'USER': os.environ.get('DATABASE_USER'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-    },
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# Configuration des bases de données
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 

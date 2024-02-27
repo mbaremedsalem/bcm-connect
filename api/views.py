@@ -14,7 +14,8 @@ import json
 from rest_framework.exceptions import APIException
 from django.utils.translation import gettext_lazy as _
 import logging
-
+from django.utils.decorators import method_decorator  # Ajoutez cette ligne
+from django.contrib.auth.hashers import make_password
 
 # Create your views here.
 class InvalidInformationException(APIException):
@@ -23,7 +24,6 @@ class InvalidInformationException(APIException):
 
 class Mytoken(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-    
     def post(self, request, format=None):
         # URL de l'API
         api_url = "https://reporting.bcm.mr/authenticate/login"
@@ -80,39 +80,17 @@ class Mytoken(TokenObtainPairView):
         })
     
 
-
-class GetTokenView(APIView):
-    def post(self, request, format=None):
-        # URL de l'API
-        api_url = "https://reporting.bcm.mr/authenticate/login"
-
-        # Données à envoyer dans la requête POST
-        api_data = {"banque": "AUB", "password": "ba@#1!8?-34b"}
-
+class UpdatePassword(TokenObtainPairView):
+    def put(self, request):
+        phone=request.data['phone']
+        password=make_password(request.data['password'])
         try:
-            # Effectuer la requête POST à l'API avec vérification SSL désactivée
-            response = requests.post(api_url, json=api_data, verify=False)
-
-            # Vérifier si la requête a réussi (code HTTP 200)
-            if response.status_code == 200:
-                # Vérifier le type de contenu de la réponse
-                content_type = response.headers.get('content-type', '')
-                if 'application/json' in content_type:
-                    # Extraire le token de la réponse JSON
-                    api_response_data = response.json()
-                    api_token = api_response_data.get('token')
-                    return Response({'token': api_token}, status=status.HTTP_200_OK)
-                else:
-                    # Si la réponse n'est pas au format JSON, renvoyer une réponse réussie avec le token
-                    return Response({'token': response.content.decode()}, status=status.HTTP_200_OK)
-            else:
-                # Retourner un message d'erreur si la requête a échoué
-                return Response({'error': f"Erreur lors de la requête à l'API : {response.status_code}"}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            # Retourner un message d'erreur en cas d'exception
-            return Response({'error': f"Erreur lors de la requête à l'API : {e}"}, status=status.HTTP_400_BAD_REQUEST)
-
-
+            user=UserAub.objects.get(phone=phone)
+        except:
+            return Response({'message':'Ultilisateur ne existe pas'})
+        user.password=password
+        user.save()
+        return Response({'message':'Success'})    
 
 
 class RegisterAPI(TokenObtainPairView):
@@ -162,6 +140,7 @@ class RegisterAPI(TokenObtainPairView):
 
 
 class GetAllFluxEntrantsView(APIView):
+    
     def get(self, request):
         # Récupérer tous les flux de la base de données
         flux = EtatBcmFluxEntrants.objects.all()
@@ -205,3 +184,5 @@ class GetAllBalanceDetaileeView(APIView):
         # Renvoyer les flux sérialisés en réponse JSON
         return Response(serializer.data)  
         
+
+         
