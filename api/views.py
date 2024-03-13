@@ -16,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 import logging
 from django.utils.decorators import method_decorator  # Ajoutez cette ligne
 from django.contrib.auth.hashers import make_password
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 class InvalidInformationException(APIException):
@@ -166,12 +167,16 @@ class GetAllBalanceGeneraleView(APIView):
     def get(self, request):
         # Récupérer tous les flux de la base de données
         flux = BalanceGenerale.objects.all()
+        resPerPage = 18
+        paginator = PageNumberPagination()
+        paginator.page_size = resPerPage
 
+        queryset = paginator.paginate_queryset(flux,request)
+        
         # Sérialiser les flux récupérés
-        serializer = EtatBcmBalanceGeneraleSerializer(flux, many=True)
-
+        serializer = EtatBcmBalanceGeneraleSerializer(queryset, many=True)
         # Renvoyer les flux sérialisés en réponse JSON
-        return Response(serializer.data)                
+        return paginator.get_paginated_response(serializer.data)                
 
 class GetAllBalanceDetaileeView(APIView):
     def get(self, request):
