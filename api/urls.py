@@ -8,7 +8,7 @@ urlpatterns = [
     path('password/', UpdatePassword.as_view(),name='update_password'),
     
     path('get-flux-entrant/', GetAllFluxEntrantsView.as_view(), name='get_fluxentrant'),
-    path('get-flux-sortant/', GetAllFluxSortantView.as_view(), name='get_fluxsortant'),
+    path('get-flux-sortant/', EtatBcmFluxSortantsListView.as_view(), name='get_fluxsortant'),
     path('get-balance-generale/', GetAllBalanceGeneraleView.as_view(), name='get_balancegenerale'),
     path('get-balance-detaile/', GetAllBalanceDetaileeView.as_view(), name='get_fluxsortant'),
 

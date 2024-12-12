@@ -17,7 +17,7 @@ Role=(
 class UserAub(AbstractBaseUser,PermissionsMixin):
     firstname = models.CharField(max_length=50,blank=True)
     lastname = models.CharField(max_length=50,blank=True)
-    phone = models.CharField(max_length=16,unique=True)
+    phone = models.CharField(max_length=16)
     username = models.CharField(max_length=16,unique=True,null=True)
     email = models.EmailField(max_length=50,blank=True)
     post = models.CharField(max_length=200,null=True)
@@ -76,26 +76,30 @@ class EtatBcmFluxEntrants(models.Model):
 
 
 
-class EtatBcmFluxSortant(models.Model):
-    ID = models.AutoField(primary_key=True)
-    BENEFICIAIRE = models.CharField(max_length=255)
-    DATE_TRANSACTION = models.DateField()
-    DEVISE = models.CharField(max_length=50)
-    MODE_REGLEMENT = models.CharField(max_length=50)
-    MONTANT_TRANSACTION = models.DecimalField(max_digits=15, decimal_places=2)
-    NIF_NNI = models.CharField(max_length=255)
-    NOM_DONNEUR_ORDRE = models.CharField(max_length=255, null=True, blank=True)
-    PAYS = models.CharField(max_length=255, null=True, blank=True)
-    PRODUIT = models.CharField(max_length=255)
-    REFERENCE_TRANSACTION = models.CharField(max_length=255)
-    SOURCE_DEVISE = models.CharField(max_length=255)
-    TAUX_CHANGE = models.DecimalField(max_digits=15, decimal_places=2)
-    TYPE_SWIFT = models.CharField(max_length=50)
-    BANQUE = models.CharField(max_length=255)
-    NATUREECONOMIQUE = models.CharField(max_length=255)
-    NATUREECONOMIQUE = models.CharField(max_length=255)
+class EtatBcmFluxSortants(models.Model):
+    id = models.IntegerField(primary_key=True)
+    banque = models.CharField(max_length=100)
+    nom_complet = models.CharField(max_length=200)
+    date = models.DateTimeField()
+    devise = models.CharField(max_length=3)
+    type_transaction = models.CharField(max_length=10)
+    montant = models.DecimalField(max_digits=20, decimal_places=2)
+    nature_economique = models.CharField(max_length=100)
+    identifiant_transaction = models.BigIntegerField()
+    nom_destinataire = models.CharField(max_length=200)
+    pays = models.CharField(max_length=100)
+    produit = models.CharField(max_length=100)
+    identifiant_banque = models.BigIntegerField()
+    commentaire = models.CharField(max_length=200)
+    taux_change = models.DecimalField(max_digits=10, decimal_places=2)
+    type_message = models.CharField(max_length=10)
+    statut = models.IntegerField()
+
+    def __str__(self):
+        return f"Transaction {self.id} - {self.nom_complet}"
+
     class Meta:
-        db_table = 'etatbcm_flux_sortants'   
+        db_table = 'ETATBCMFLUX_SORTANTS' 
 
 
 class BalanceGenerale(models.Model):

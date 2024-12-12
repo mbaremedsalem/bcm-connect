@@ -58,11 +58,11 @@ class EtatBcmFluxEntrantsSerializer(serializers.ModelSerializer):
         model = EtatBcmFluxEntrants
         fields = '__all__'
 
-class EtatBcmFluxSortantSerializer(serializers.ModelSerializer):
+class EtatBcmFluxSortantsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = EtatBcmFluxSortant
-        fields = '__all__'
-
+        model = EtatBcmFluxSortants
+        fields = '__all__' 
+        
 class EtatBcmBalanceGeneraleSerializer(serializers.ModelSerializer):
     class Meta:
         model = BalanceGenerale

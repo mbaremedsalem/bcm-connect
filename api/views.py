@@ -17,6 +17,7 @@ import logging
 from django.utils.decorators import method_decorator  # Ajoutez cette ligne
 from django.contrib.auth.hashers import make_password
 from rest_framework.pagination import PageNumberPagination
+from rest_framework import generics
 
 # Create your views here.
 class InvalidInformationException(APIException):
@@ -152,16 +153,13 @@ class GetAllFluxEntrantsView(APIView):
         # Renvoyer les flux sérialisés en réponse JSON
         return Response(serializer.data)
 
-class GetAllFluxSortantView(APIView):
-    def get(self, request):
-        # Récupérer tous les flux de la base de données
-        flux = EtatBcmFluxSortant.objects.all()
 
-        # Sérialiser les flux récupérés
-        serializer = EtatBcmFluxSortantSerializer(flux, many=True)
 
-        # Renvoyer les flux sérialisés en réponse JSON
-        return Response(serializer.data)   
+
+class EtatBcmFluxSortantsListView(generics.ListAPIView):
+    queryset = EtatBcmFluxSortants.objects.all()
+    serializer_class = EtatBcmFluxSortantsSerializer
+  
 
 class GetAllBalanceGeneraleView(APIView):
     def get(self, request):
